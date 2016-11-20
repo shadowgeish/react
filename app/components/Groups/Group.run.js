@@ -637,4 +637,9 @@ $.get('server/chart/line.json', function(data) {
 
 }
 
+
+
+
+
+
 export default initGroup;

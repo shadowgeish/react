@@ -5,6 +5,7 @@ import { Grid, Row, Col, Dropdown, MenuItem, Button, ButtonGroup, ButtonToolbar,
 
 import DashboardRun from './Dashboard.run';
 import RippleRun from '../Ripple/Ripple.run';
+import RunAjaxRequest from '../Utils/RunAjaxRequest';
 
 class Dashboard extends React.Component {
 
@@ -12,12 +13,50 @@ class Dashboard extends React.Component {
         pubsub.publish('setPageTitle', this.constructor.name);
     }
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            paymentsData: [],
+            membersData: [],
+            eventsData: []
+        };
+    }
+
     componentDidMount() {
         DashboardRun();
         RippleRun();
+
+        var dictParams = {'token': sessionStorage.getItem('token'),'id':this.props.params.id};
+        RunAjaxRequest('http://localhost:8888/dashboard', dictParams,(data) => {
+            if(data){
+                this.setState({
+                    paymentsData: data.payments_data,
+                    membersData: data.members_data,
+                    eventsData: data.events_data
+                });
+
+            }
+        });
+
     }
 
     render() {
+
+        const event_list = this.state.eventsData.map(function(event) {
+          return (
+                <div className="card-body pb0">
+                    <p className="pull-left mr"><em className="ion-record text-info"></em></p>
+                    <div className="oh">
+                        <p><span className="mr-sm" data-localize={event.event_type}>{event.event_type}</span><strong className="mr-sm">{event.group}</strong></p>
+                        <div className="clearfix">
+                            <p className="bl pl"><i><a href="#">Click to open the group</a></i></p>
+                            <div className="pull-left text-muted"><em className="ion-android-time mr-sm"></em><span>{event.duration_seconds} ago</span></div>
+                        </div>
+                    </div>
+                </div>
+          );
+        });
+
         return (
             <section>
                 <div className="content-heading bg-white">
@@ -150,58 +189,8 @@ class Dashboard extends React.Component {
                                     {/* END dropdown */}
                                     <div className="card-title">Activity</div><small>What's people doing right now</small>
                                 </div>
-                                <div className="card-body bb">
-                                    <p className="pull-left mr"><a href=""><img src="img/user/04.jpg" alt="User" className="img-circle thumb32"/></a></p>
-                                    <div className="oh">
-                                        <p><strong className="spr">Adam</strong><span className="spr">posted in</span><a href="">Material</a></p>
-                                        <p className="bl pl"><i>That's awesome!</i></p>
-                                        <div className="clearfix">
-                                            <div className="pull-left text-muted"><em className="ion-android-time mr-sm"></em><span>2 hours ago</span></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="card-body bb">
-                                    <p className="pull-left mr"><a href=""><img src="img/user/06.jpg" alt="User" className="img-circle thumb32"/></a></p>
-                                    <div className="oh">
-                                        <p><strong className="spr">Dora</strong><span>added a new task</span></p>
-                                        <p><em className="ion-calendar icon-fw"></em><a href="">Start migration</a></p>
-                                        <div className="clearfix">
-                                            <div className="pull-left text-muted"><em className="ion-android-time mr-sm"></em><span>3 hours ago</span></div>
-                                            <div className="pull-right"><span>2</span><em className="ion-star ml-sm text-warning"></em></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="card-body bb">
-                                    <p className="pull-left mr"><a href=""><img src="img/user/07.jpg" alt="User" className="img-circle thumb32"/></a></p>
-                                    <div className="oh">
-                                        <p><strong className="spr">Kathryn</strong><span className="spr">published</span><a href="">Trip</a></p>
-                                        <p><a href=""><img src="img/pic1.jpg" alt="Pic" className="mr-sm thumb48"/></a><a href=""><img src="img/pic2.jpg" alt="Pic" className="mr-sm thumb48"/></a></p>
-                                        <div className="clearfix">
-                                            <div className="pull-left text-muted"><em className="ion-android-time mr-sm"></em><span>4 hours ago</span></div>
-                                            <div className="pull-right"><span>2</span><em className="ion-ios-heart ml-sm text-danger"></em></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="card-body bb">
-                                    <p className="pull-left mr"><a href=""><img src="img/user/02.jpg" alt="User" className="img-circle thumb32"/></a></p>
-                                    <div className="oh">
-                                        <p><strong className="spr">Daniel</strong><span className="spr">joined to</span><a href="">Group</a></p>
-                                        <p><span className="image-list"><a href=""><img src="img/user/03.jpg" alt="User" className="img-circle thumb32"/></a><a href=""><img src="img/user/04.jpg" alt="User" className="img-circle thumb32"/></a><a href=""><img src="img/user/05.jpg" alt="User" className="img-circle thumb32"/></a><a href=""><img src="img/user/07.jpg" alt="User" className="img-circle thumb32"/></a><strong><a href="" className="ml-sm link-unstyled">+3</a></strong></span></p>
-                                        <div className="clearfix">
-                                            <div className="pull-left text-muted"><em className="ion-android-time mr-sm"></em><span>yesterday</span></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="card-body bb">
-                                    <p className="pull-left mr"><a href=""><img src="img/user/03.jpg" alt="User" className="img-circle thumb32"/></a></p>
-                                    <div className="oh">
-                                        <p><strong className="spr">Leroy Day</strong><span className="spr">wakes up!</span></p>
-                                        <p className="bl pl"><i>That's awesome!</i></p>
-                                        <div className="clearfix">
-                                            <div className="pull-left text-muted"><em className="ion-android-time mr-sm"></em><span>2 weeks ago</span></div>
-                                        </div>
-                                    </div>
-                                </div><a href="" className="card-footer btn btn-flat btn-default"><small className="text-center text-muted lh1">See more activities</small></a>
+                                {event_list}
+                                <a href="" className="card-footer btn btn-flat btn-default"><small className="text-center text-muted lh1">See more activities</small></a>
                             </div>
                         </Col>
 
