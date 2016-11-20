@@ -1,0 +1,24 @@
+[{
+    "label": "In Progress",
+    "color": "#00BCD4",
+    "data": [
+        ["Serge", 50],
+        ["Rafael", 50],
+        ["Rafael 1", 50],
+        ["Rafael 2", 50],
+        ["Rafael 3", 50],
+        ["Lea 4", 50],
+        ["Lea 1", 50],
+        ["Lea 3", 50],
+        ["Lea 5", 50]
+    ]
+}, {
+    "label": "Complete",
+    "color": "#CDDC39",
+    "data": [
+        ["Serge", 50],
+        ["Rafael", 50],
+        ["Rafael 1", 50],
+        ["Rafael 2", 50]
+    ]
+}]

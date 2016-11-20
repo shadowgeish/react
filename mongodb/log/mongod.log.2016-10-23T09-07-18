@@ -1,0 +1,25 @@
+2016-10-22T00:14:11.643+0200 I CONTROL  [main] Trying to start Windows service 'MongoDB'
+2016-10-22T00:14:11.644+0200 I STORAGE  [thread1] Service running
+2016-10-22T00:14:11.679+0200 I CONTROL  [initandlisten] MongoDB starting : pid=3144 port=27017 dbpath=C:\Users\Rafael\Documents\tontine\react\mongodb\data\db 64-bit host=RafaelN
+2016-10-22T00:14:11.679+0200 I CONTROL  [initandlisten] targetMinOS: Windows 7/Windows Server 2008 R2
+2016-10-22T00:14:11.679+0200 I CONTROL  [initandlisten] db version v3.2.10
+2016-10-22T00:14:11.679+0200 I CONTROL  [initandlisten] git version: 79d9b3ab5ce20f51c272b4411202710a082d0317
+2016-10-22T00:14:11.679+0200 I CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1t-fips  3 May 2016
+2016-10-22T00:14:11.687+0200 I CONTROL  [initandlisten] allocator: tcmalloc
+2016-10-22T00:14:11.687+0200 I CONTROL  [initandlisten] modules: none
+2016-10-22T00:14:11.687+0200 I CONTROL  [initandlisten] build environment:
+2016-10-22T00:14:11.687+0200 I CONTROL  [initandlisten]     distmod: 2008plus-ssl
+2016-10-22T00:14:11.687+0200 I CONTROL  [initandlisten]     distarch: x86_64
+2016-10-22T00:14:11.687+0200 I CONTROL  [initandlisten]     target_arch: x86_64
+2016-10-22T00:14:11.687+0200 I CONTROL  [initandlisten] options: { config: "C:\Users\Rafael\Documents\tontine\react\mongodb\mongod.cfg", service: true, storage: { dbPath: "C:\Users\Rafael\Documents\tontine\react\mongodb\data\db" }, systemLog: { destination: "file", path: "C:\Users\Rafael\Documents\tontine\react\mongodb\log\mongod.log" } }
+2016-10-22T00:14:11.952+0200 I -        [initandlisten] Detected data files in C:\Users\Rafael\Documents\tontine\react\mongodb\data\db created by the 'wiredTiger' storage engine, so setting the active storage engine to 'wiredTiger'.
+2016-10-22T00:14:11.972+0200 W -        [initandlisten] Detected unclean shutdown - C:\Users\Rafael\Documents\tontine\react\mongodb\data\db\mongod.lock is not empty.
+2016-10-22T00:14:11.972+0200 W STORAGE  [initandlisten] Recovering data from the last clean checkpoint.
+2016-10-22T00:14:12.140+0200 I STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=1G,session_max=20000,eviction=(threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000),checkpoint=(wait=60,log_size=2GB),statistics_log=(wait=0),
+2016-10-22T00:14:21.065+0200 I COMMAND  [initandlisten] query admin.system.roles planSummary: EOF ntoreturn:0 ntoskip:0 keysExamined:0 docsExamined:0 cursorExhausted:1 keyUpdates:0 writeConflicts:0 numYields:0 nreturned:0 reslen:20 locks:{ Global: { acquireCount: { r: 10, W: 2 } }, Database: { acquireCount: { r: 4 } }, Collection: { acquireCount: { r: 4 } } } 102ms
+2016-10-22T00:14:21.102+0200 I NETWORK  [HostnameCanonicalizationWorker] Starting hostname canonicalization worker
+2016-10-22T00:14:21.102+0200 I FTDC     [initandlisten] Initializing full-time diagnostic data capture with directory 'C:/Users/Rafael/Documents/tontine/react/mongodb/data/db/diagnostic.data'
+2016-10-22T00:14:21.735+0200 I NETWORK  [initandlisten] waiting for connections on port 27017
+2016-10-22T00:14:22.404+0200 I FTDC     [ftdc] Unclean full-time diagnostic data capture shutdown detected, found interim file, some metrics may have been lost. OK
+2016-10-22T01:51:33.427+0200 I COMMAND  [ftdc] serverStatus was very slow: { after basic: 0, after asserts: 1070, after connections: 1070, after extra_info: 1070, after globalLock: 1070, after locks: 1080, after network: 1080, after opcounters: 1080, after opcountersRepl: 1080, after storageEngine: 1130, after tcmalloc: 1130, after wiredTiger: 1530, at end: 1820 }
+2016-10-22T01:52:26.769+0200 I COMMAND  [PeriodicTaskRunner] task: DBConnectionPool-cleaner took: 153ms

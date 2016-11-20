@@ -1,0 +1,21 @@
+2016-10-28T22:02:04.608+0200 I CONTROL  [main] Trying to start Windows service 'MongoDB'
+2016-10-28T22:02:04.609+0200 I STORAGE  [thread1] Service running
+2016-10-28T22:02:04.620+0200 I CONTROL  [initandlisten] MongoDB starting : pid=3224 port=27017 dbpath=C:\Users\Rafael\Documents\tontine\react\mongodb\data\db 64-bit host=RafaelN
+2016-10-28T22:02:04.620+0200 I CONTROL  [initandlisten] targetMinOS: Windows 7/Windows Server 2008 R2
+2016-10-28T22:02:04.620+0200 I CONTROL  [initandlisten] db version v3.2.10
+2016-10-28T22:02:04.620+0200 I CONTROL  [initandlisten] git version: 79d9b3ab5ce20f51c272b4411202710a082d0317
+2016-10-28T22:02:04.620+0200 I CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1t-fips  3 May 2016
+2016-10-28T22:02:04.622+0200 I CONTROL  [initandlisten] allocator: tcmalloc
+2016-10-28T22:02:04.622+0200 I CONTROL  [initandlisten] modules: none
+2016-10-28T22:02:04.622+0200 I CONTROL  [initandlisten] build environment:
+2016-10-28T22:02:04.622+0200 I CONTROL  [initandlisten]     distmod: 2008plus-ssl
+2016-10-28T22:02:04.622+0200 I CONTROL  [initandlisten]     distarch: x86_64
+2016-10-28T22:02:04.622+0200 I CONTROL  [initandlisten]     target_arch: x86_64
+2016-10-28T22:02:04.622+0200 I CONTROL  [initandlisten] options: { config: "C:\Users\Rafael\Documents\tontine\react\mongodb\mongod.cfg", service: true, storage: { dbPath: "C:\Users\Rafael\Documents\tontine\react\mongodb\data\db" }, systemLog: { destination: "file", path: "C:\Users\Rafael\Documents\tontine\react\mongodb\log\mongod.log" } }
+2016-10-28T22:02:05.019+0200 I -        [initandlisten] Detected data files in C:\Users\Rafael\Documents\tontine\react\mongodb\data\db created by the 'wiredTiger' storage engine, so setting the active storage engine to 'wiredTiger'.
+2016-10-28T22:02:05.044+0200 W -        [initandlisten] Detected unclean shutdown - C:\Users\Rafael\Documents\tontine\react\mongodb\data\db\mongod.lock is not empty.
+2016-10-28T22:02:05.044+0200 W STORAGE  [initandlisten] Recovering data from the last clean checkpoint.
+2016-10-28T22:02:05.045+0200 I STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=1G,session_max=20000,eviction=(threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000),checkpoint=(wait=60,log_size=2GB),statistics_log=(wait=0),
+2016-10-28T22:02:07.942+0200 I NETWORK  [HostnameCanonicalizationWorker] Starting hostname canonicalization worker
+2016-10-28T22:02:07.942+0200 I FTDC     [initandlisten] Initializing full-time diagnostic data capture with directory 'C:/Users/Rafael/Documents/tontine/react/mongodb/data/db/diagnostic.data'
+2016-10-28T22:02:08.050+0200 I NETWORK  [initandlisten] waiting for connections on port 27017

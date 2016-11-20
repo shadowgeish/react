@@ -1,0 +1,16 @@
+2016-10-16T14:38:49.366+0200 I CONTROL  [main] Trying to start Windows service 'MongoDB'
+2016-10-16T14:38:49.368+0200 I STORAGE  [thread1] Service running
+2016-10-16T14:38:49.369+0200 I CONTROL  [initandlisten] MongoDB starting : pid=28848 port=27017 dbpath=C:\Users\Rafael\Documents\tontine\react\mongodb\data\db 64-bit host=RafaelN
+2016-10-16T14:38:49.369+0200 I CONTROL  [initandlisten] targetMinOS: Windows 7/Windows Server 2008 R2
+2016-10-16T14:38:49.370+0200 I CONTROL  [initandlisten] db version v3.2.10
+2016-10-16T14:38:49.370+0200 I CONTROL  [initandlisten] git version: 79d9b3ab5ce20f51c272b4411202710a082d0317
+2016-10-16T14:38:49.371+0200 I CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1t-fips  3 May 2016
+2016-10-16T14:38:49.372+0200 I CONTROL  [initandlisten] allocator: tcmalloc
+2016-10-16T14:38:49.372+0200 I CONTROL  [initandlisten] modules: none
+2016-10-16T14:38:49.372+0200 I CONTROL  [initandlisten] build environment:
+2016-10-16T14:38:49.372+0200 I CONTROL  [initandlisten]     distmod: 2008plus-ssl
+2016-10-16T14:38:49.372+0200 I CONTROL  [initandlisten]     distarch: x86_64
+2016-10-16T14:38:49.372+0200 I CONTROL  [initandlisten]     target_arch: x86_64
+2016-10-16T14:38:49.372+0200 I CONTROL  [initandlisten] options: { config: "C:\Users\Rafael\Documents\tontine\react\mongodb\mongod.cfg", service: true, storage: { dbPath: "C:\Users\Rafael\Documents\tontine\react\mongodb\data\db" }, systemLog: { destination: "file", path: "C:\Users\Rafael\Documents\tontine\react\mongodb\log\mongod.log" } }
+2016-10-16T14:38:49.374+0200 I STORAGE  [initandlisten] exception in initAndListen: 29 Data directory C:\Users\Rafael\Documents\tontine\react\mongodb\data\db not found., terminating
+2016-10-16T14:38:49.374+0200 I CONTROL  [serviceStopWorker] dbexit:  rc: 49

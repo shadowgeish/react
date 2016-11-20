@@ -1,0 +1,60 @@
+2016-10-16T15:09:01.189+0200 I CONTROL  [main] Trying to start Windows service 'MongoDB'
+2016-10-16T15:09:01.191+0200 I STORAGE  [thread1] Service running
+2016-10-16T15:09:01.192+0200 I CONTROL  [initandlisten] MongoDB starting : pid=29348 port=27017 dbpath=C:\Users\Rafael\Documents\tontine\react\mongodb\data\db 64-bit host=RafaelN
+2016-10-16T15:09:01.192+0200 I CONTROL  [initandlisten] targetMinOS: Windows 7/Windows Server 2008 R2
+2016-10-16T15:09:01.193+0200 I CONTROL  [initandlisten] db version v3.2.10
+2016-10-16T15:09:01.193+0200 I CONTROL  [initandlisten] git version: 79d9b3ab5ce20f51c272b4411202710a082d0317
+2016-10-16T15:09:01.194+0200 I CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1t-fips  3 May 2016
+2016-10-16T15:09:01.195+0200 I CONTROL  [initandlisten] allocator: tcmalloc
+2016-10-16T15:09:01.195+0200 I CONTROL  [initandlisten] modules: none
+2016-10-16T15:09:01.195+0200 I CONTROL  [initandlisten] build environment:
+2016-10-16T15:09:01.195+0200 I CONTROL  [initandlisten]     distmod: 2008plus-ssl
+2016-10-16T15:09:01.195+0200 I CONTROL  [initandlisten]     distarch: x86_64
+2016-10-16T15:09:01.195+0200 I CONTROL  [initandlisten]     target_arch: x86_64
+2016-10-16T15:09:01.196+0200 I CONTROL  [initandlisten] options: { config: "C:\Users\Rafael\Documents\tontine\react\mongodb\mongod.cfg", service: true, storage: { dbPath: "C:\Users\Rafael\Documents\tontine\react\mongodb\data\db" }, systemLog: { destination: "file", path: "C:\Users\Rafael\Documents\tontine\react\mongodb\log\mongod.log" } }
+2016-10-16T15:09:01.258+0200 I -        [initandlisten] Detected data files in C:\Users\Rafael\Documents\tontine\react\mongodb\data\db created by the 'wiredTiger' storage engine, so setting the active storage engine to 'wiredTiger'.
+2016-10-16T15:09:01.260+0200 I STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=1G,session_max=20000,eviction=(threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000),checkpoint=(wait=60,log_size=2GB),statistics_log=(wait=0),
+2016-10-16T15:09:02.904+0200 I NETWORK  [HostnameCanonicalizationWorker] Starting hostname canonicalization worker
+2016-10-16T15:09:02.904+0200 I FTDC     [initandlisten] Initializing full-time diagnostic data capture with directory 'C:/Users/Rafael/Documents/tontine/react/mongodb/data/db/diagnostic.data'
+2016-10-16T15:09:02.910+0200 I NETWORK  [initandlisten] waiting for connections on port 27017
+2016-10-16T15:12:21.448+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:59716 #1 (1 connection now open)
+2016-10-16T15:12:21.450+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:59717 #2 (2 connections now open)
+2016-10-16T15:12:21.451+0200 I NETWORK  [conn1] end connection 127.0.0.1:59716 (1 connection now open)
+2016-10-16T15:12:21.697+0200 I NETWORK  [conn2] end connection 127.0.0.1:59717 (0 connections now open)
+2016-10-16T15:12:21.700+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:59718 #3 (1 connection now open)
+2016-10-16T15:12:44.066+0200 I NETWORK  [conn3] end connection 127.0.0.1:59718 (0 connections now open)
+2016-10-16T16:37:22.613+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:60495 #4 (1 connection now open)
+2016-10-16T16:37:32.310+0200 I COMMAND  [conn4] command admin.$cmd command: listDatabases { listDatabases: 1.0 } keyUpdates:0 writeConflicts:0 numYields:0 reslen:109 locks:{ Global: { acquireCount: { r: 2 } }, Database: { acquireCount: { r: 1 } } } protocol:op_command 177ms
+2016-10-16T16:45:42.351+0200 I COMMAND  [conn4] command appdb.users command: insert { insert: "users", documents: [ { _id: ObjectId('5803929533b5bae106191af3'), email: "test@email.com" } ], ordered: true } ninserted:1 keyUpdates:0 writeConflicts:0 numYields:0 reslen:25 locks:{ Global: { acquireCount: { r: 2, w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { W: 1 } } } protocol:op_command 393ms
+2016-10-16T20:16:24.190+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:64708 #5 (2 connections now open)
+2016-10-16T20:20:04.665+0200 I NETWORK  [conn5] end connection 127.0.0.1:64708 (1 connection now open)
+2016-10-16T20:20:04.665+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:64722 #6 (2 connections now open)
+2016-10-16T20:22:01.807+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:64728 #7 (3 connections now open)
+2016-10-16T20:59:21.848+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:65431 #8 (4 connections now open)
+2016-10-16T20:59:21.908+0200 I NETWORK  [conn8] end connection 127.0.0.1:65431 (3 connections now open)
+2016-10-16T21:00:31.924+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:65442 #9 (4 connections now open)
+2016-10-16T21:00:31.935+0200 I NETWORK  [conn9] end connection 127.0.0.1:65442 (3 connections now open)
+2016-10-16T21:01:35.759+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:65450 #10 (4 connections now open)
+2016-10-16T21:01:35.763+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:65451 #11 (5 connections now open)
+2016-10-16T21:01:35.766+0200 I NETWORK  [conn10] end connection 127.0.0.1:65450 (4 connections now open)
+2016-10-16T21:01:35.767+0200 I NETWORK  [conn11] end connection 127.0.0.1:65451 (3 connections now open)
+2016-10-16T23:56:55.113+0200 I NETWORK  [conn6] end connection 127.0.0.1:64722 (2 connections now open)
+2016-10-16T23:56:55.148+0200 I NETWORK  [conn7] end connection 127.0.0.1:64728 (1 connection now open)
+2016-10-16T23:58:39.905+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:50099 #12 (2 connections now open)
+2016-10-16T23:58:39.936+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:50100 #13 (3 connections now open)
+2016-10-16T23:58:40.094+0200 I NETWORK  [conn12] end connection 127.0.0.1:50099 (2 connections now open)
+2016-10-16T23:58:40.094+0200 I NETWORK  [conn13] end connection 127.0.0.1:50100 (2 connections now open)
+2016-10-16T23:59:58.155+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:50111 #14 (2 connections now open)
+2016-10-16T23:59:58.160+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:50112 #15 (3 connections now open)
+2016-10-16T23:59:59.951+0200 I NETWORK  [conn14] end connection 127.0.0.1:50111 (2 connections now open)
+2016-10-16T23:59:59.951+0200 I NETWORK  [conn15] end connection 127.0.0.1:50112 (2 connections now open)
+2016-10-17T00:08:51.084+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:50201 #16 (2 connections now open)
+2016-10-17T00:08:51.089+0200 I NETWORK  [conn16] end connection 127.0.0.1:50201 (1 connection now open)
+2016-10-17T00:12:11.563+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:50217 #17 (2 connections now open)
+2016-10-17T00:12:11.567+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:50218 #18 (3 connections now open)
+2016-10-17T00:12:12.872+0200 I NETWORK  [conn18] end connection 127.0.0.1:50218 (2 connections now open)
+2016-10-17T00:12:12.872+0200 I NETWORK  [conn17] end connection 127.0.0.1:50217 (2 connections now open)
+2016-10-17T00:15:00.314+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:50242 #19 (2 connections now open)
+2016-10-17T00:15:00.319+0200 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:50243 #20 (3 connections now open)
+2016-10-17T00:15:01.565+0200 I NETWORK  [conn20] end connection 127.0.0.1:50243 (2 connections now open)
+2016-10-17T00:15:01.565+0200 I NETWORK  [conn19] end connection 127.0.0.1:50242 (2 connections now open)

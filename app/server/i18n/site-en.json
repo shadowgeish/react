@@ -1,0 +1,10 @@
+{
+  "WELCOME": "Welcome",
+  "PRIVATE":"Private",
+  "RANDOM":"Random",
+  "FIRST_ARRIVED_FIRST_SERVED":"First arrived First served",
+  "PUBLIC":"Public",
+  "header": {
+    "SEARCH": "Search.."
+  }
+}
