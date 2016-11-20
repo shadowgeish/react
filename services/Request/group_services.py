@@ -174,7 +174,95 @@ class ListHandler(tornado.web.RequestHandler):
             self.write(str_write)
             session.close()
 
-def getListEvent(sess=None, user_id=None, event_type=None):
+
+class DashBoardHandler(tornado.web.RequestHandler):
+    def initialize(self, *args, **kwargs):
+        self.set_header('Access-Control-Allow-Origin', self.request.headers.get('Origin', '*'))
+        self.set_header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS')
+        self.set_header('Access-Control-Allow-Credentials', 'true')
+
+    def get(self):
+        print('get')
+        self.request_handler()
+
+    def post(self):
+        print('post')
+        self.request_handler()
+
+    def request_handler(self):
+        print("Starting:DashBoardHandler")
+        session = create_bound_engine()
+        str_write = '{"status":"nok"}'
+        try:
+            token = self.get_argument('token', None)
+            import jwt
+            tokenData = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+            user_id = tokenData['id']
+            list_events = getListEvent(sess=session, user_id=user_id, event_type='userEvents')
+            list_payments = getListPayment(sess=session, user_id=user_id, event_type='userPaymentToSend')
+            list_requests = getListRequest(sess=session, user_id=user_id, event_type='userRequests')
+            str_write = '{"permission":"ok","events_data":[' + ','.join(list_events) + '],"payments_data":[' + ','.join(list_payments) + '],"requests_data":[' + ','.join(list_requests) + ']}'
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+        finally:
+            print(str_write)
+            self.write(str_write)
+
+
+def getListRequest(sess=None, user_id=None, event_type='userRequests'):
+    print("Starting:getListRequest")
+    if not sess:
+        session = create_bound_engine(True)
+    else:
+        session = sess
+    list_requests = None
+    try:
+        if event_type == 'userRequests':
+            print("Starting query")
+            #events = session.query(Event).join(GroupMemberList,GroupMemberList.group_id==Event.group_id).filter((Event.initiator_id==user_id) | (GroupMemberList.user_id==user_id))
+            status = session.query(RequestStatus).filter(RequestStatus.code == 'PENDING').first()
+            requests = session.query(Request).filter(Request.sender_id==user_id,Request.request_status==status)
+            list_requests = list()
+            for request in requests:
+                list_requests.append(request.to_json())
+    except:
+        print("getListRequest:Unexpected error:", sys.exc_info()[0])
+        raise
+    finally:
+        print(format(list_requests))
+        if not sess:
+            session.close()
+        return list_requests
+
+
+def getListPayment(sess=None, user_id=None, event_type='userPaymentToSend'):
+    print("Starting:getListPayment")
+    if not sess:
+        session = create_bound_engine(True)
+    else:
+        session = sess
+    list_payments = None
+    try:
+        if event_type == 'userPaymentToSend':
+            print("Starting query")
+            #events = session.query(Event).join(GroupMemberList,GroupMemberList.group_id==Event.group_id).filter((Event.initiator_id==user_id) | (GroupMemberList.user_id==user_id))
+            status = session.query(PaymentStatus).filter(PaymentStatus.code == 'PENDING').first()
+            payments = session.query(Payment).filter(Payment.sender_id==user_id,Payment.status==status)
+            list_payments = list()
+            for payment in payments:
+                list_payments.append(payment.to_json())
+    except:
+        print("getListPayment:Unexpected error:", sys.exc_info()[0])
+        raise
+    finally:
+        print(format(list_payments))
+        if not sess:
+            session.close()
+        return list_payments
+
+
+def getListEvent(sess=None, user_id=None, event_type='userEvents', group_id=None):
     print("Starting:getListEvent")
     if not sess:
         session = create_bound_engine(True)
@@ -184,7 +272,11 @@ def getListEvent(sess=None, user_id=None, event_type=None):
     try:
         if event_type == 'userEvents':
             print("Starting query")
-            events = session.query(Event).join(GroupMemberList,GroupMemberList.group_id==Event.group_id).filter((Event.initiator_id==user_id) | (GroupMemberList.user_id==user_id))
+            #events = session.query(Event).join(GroupMemberList,GroupMemberList.group_id==Event.group_id).filter((Event.initiator_id==user_id) | (GroupMemberList.user_id==user_id))
+            if not group_id:
+                events = session.query(Event).filter(Event.initiator_id==user_id)
+            else:
+                events = session.query(Event).filter(Event.initiator_id==user_id, Event.group_id==group_id)
             list_events = list()
             for event in events:
                 list_events.append(event.to_json())
@@ -239,7 +331,7 @@ class GroupsHandler(tornado.web.RequestHandler):
                         list_member = list()
                         for asso in group.members:
                             list_member.append(asso.user.to_short_json())
-                        list_events= getListEvent(sess = session, user_id=user_id,event_type='userEvents')
+                        list_events= getListEvent(sess = session, user_id=user_id,event_type='userEvents',group_id=group_id)
                         str_write = '{"permission":"ok","group_info":' + group.to_json() + ',"members_data":[' + ','.join(list_member) + '],"events_data":[' + ','.join(list_events) + ']}'
                     else:
                         str_write = '{"permission":"nok","group_info":[],"members_data":[],"events_data":[]}'
@@ -304,6 +396,7 @@ class StartGroupHandler(tornado.web.RequestHandler):
             session.add(new_event)
 
             type = session.query(PaymentType).filter(PaymentType.code == 'GROUP_REGULAR_PAYMENT_DUE').first()
+            status = session.query(PaymentStatus).filter(PaymentStatus.code == 'PENDING').first()
             group_members = group.members
             payment_date = first_payment_date
             amount = group.amount
@@ -322,7 +415,7 @@ class StartGroupHandler(tornado.web.RequestHandler):
                         dict_received = dict_member_date_reception[asso.user.id]
                         dict_received[asso2.user.id] = payment_date
                         new_payment = Payment(sender=asso2.user, receiver=asso.user, group=group,
-                                                type=type, projected_payment_due_date=payment_date,
+                                                type=type, projected_payment_due_date=payment_date,status=status,
                                                 last_update_date=datetime.datetime.now(), projected_amount_due =amount_due )
                         session.add(new_payment)
                 payment_date = add_months(payment_date,frequency)

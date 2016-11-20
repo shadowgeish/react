@@ -55,6 +55,7 @@ class Group extends React.Component {
             showModalNew: false,
             groupData:{},
             membersData:[],
+            eventsData: [],
             col1:[],
             col2:[]
         };
@@ -108,6 +109,21 @@ class Group extends React.Component {
                         <div className="text-muted text-ellipsis">{member.email}</div>
                     </div>
                 </li>
+          );
+        });
+
+        const event_list = this.state.eventsData.map(function(event) {
+          return (
+                <div className="card-body pb0">
+                    <p className="pull-left mr"><em className="ion-record text-info"></em></p>
+                    <div className="oh">
+                        <p><span className="mr-sm" data-localize={event.event_type}>{event.event_type}</span><strong className="mr-sm">{event.group}</strong></p>
+                        <div className="clearfix">
+                            <p className="bl pl"><i><a href="#">Click to open the group</a></i></p>
+                            <div className="pull-left text-muted"><em className="ion-android-time mr-sm"></em><span>{event.duration_seconds} ago</span></div>
+                        </div>
+                    </div>
+                </div>
           );
         });
 
@@ -282,6 +298,7 @@ class Group extends React.Component {
                                                     {/* END dropdown */}
                                                     Activity
                                                 </h5>
+                                                {event_list}
                                                 <div className="card-body pb0">
                                                     <p className="pull-left mr"><em className="ion-record text-info"></em></p>
                                                     <div className="oh">

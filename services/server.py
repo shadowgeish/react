@@ -19,6 +19,7 @@ def make_app():
         (r"/add_group",AddGroupHandler),
         (r"/get_list",ListHandler),
         (r"/get_groups",GroupsHandler),
+        (r"/dashboard",DashBoardHandler),
         (r"/site-en.json",LangHandler),
 
 

@@ -1,7 +1,10 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime,Table,Float
 from sqlalchemy.orm import relationship
 import datetime
+from datetime import datetime
+from datetime import timedelta
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.hybrid import hybrid_property
 from utils import *
 
 Base = get_base()
@@ -331,8 +334,8 @@ class Event(Base):
     group = relationship("Group")
     date_event = Column(DateTime, nullable=True)
     @hybrid_property
-    def duration(self):
-        return self.date_event + " " + self.lastname
+    def duration_seconds(self):
+        return (self.date_event - datetime.datetime.now()).seconds
     last_update_date = Column(DateTime, nullable=True)
     is_active = Column(Integer, nullable=False, default=1)
 
@@ -343,7 +346,7 @@ class Event(Base):
     def to_json(self):
         return '{"id":"' + format(self.id) + '","event_type":"' + format(self.event_type.code) + '",' \
                 '"initiator":"' + format(self.initiator.first_name) + '","group":"' + format(self.group.name) + '"' \
-                ',"date_event":"' + format(self.date_event) + '"}'
+                ',"date_event":"' + format(self.date_event) + '","duration_seconds":"' + format(self.duration_seconds) + '"}'
 
 class EventCategory(Base):
     __tablename__ = 'event_category'
