@@ -78,12 +78,40 @@ class Group extends React.Component {
         const emailtoadd = this.refs.emailsToAdd.value;
         var data = $('#addMemberInput').select2('data');
 
-        var email_list = [];
+        var email_array = [];
         //for each(item in data){
         for(var i=0;i<data.length;i++){
-            email_list.push(data[i].text);
+            email_array.push(data[i].text);
         }
-        alert(email_list.join(';'));
+        var email_list = email_array.join(';');
+
+        var dictParams = {'token': sessionStorage.getItem('token'),
+                          'id':this.props.params.id,
+                          'email_list':email_list
+                          };
+        RunAjaxRequest('http://localhost:8888/add_group_member', dictParams,(data) => {
+            if(data){
+                var col1=[];
+                var col2=[];
+                for(var i=0;i<data.members_data.length;i++){
+                    if(i%2==0){
+                        col1.push(data.members_data[i]);
+                    }
+                    else{
+                        col2.push(data.members_data[i]);
+                    }
+                }
+
+                this.setState({
+                    groupData: data.group_info,
+                    membersData: data.members_data,
+                    eventsData: data.events_data,
+                    col1:col1,
+                    col2:col2
+                });
+
+            }
+        });
 
     }
 

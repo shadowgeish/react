@@ -8,6 +8,7 @@ from utils import *
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from Model.model import *
+from Request.user_services import *
 from sqlalchemy import or_
 
 class GroupRequestHandler(tornado.web.RequestHandler):
@@ -288,6 +289,77 @@ def getListEvent(sess=None, user_id=None, event_type='userEvents', group_id=None
         if not sess:
             session.close()
         return list_events
+
+
+class AddGroupMemberHandler(tornado.web.RequestHandler):
+    def initialize(self, *args, **kwargs):
+        self.set_header('Access-Control-Allow-Origin', self.request.headers.get('Origin', '*'))
+        self.set_header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS')
+        self.set_header('Access-Control-Allow-Credentials', 'true')
+
+    def get(self):
+        print('get')
+        self.request_handler()
+
+    def post(self):
+        print('post')
+        self.request_handler()
+
+    def request_handler(self):
+        print("Starting:GroupsHandler")
+        session = create_bound_engine(True)
+        str_write = '{"permission":"nok","user_exist":"nok","request_added":"nok"}'
+        try:
+            group_id = self.get_argument('id', None)
+            pemail_list = self.get_argument('email_list', None)
+            token = self.get_argument('token', None)
+            if group_id is not None and token is not None:
+                print('toket =' + format(token))
+                import jwt
+                tokenData = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+                user_id = tokenData['id']
+
+                #group = session.query(Group).filter(Group.id == group_id, Group.members.any(user_id=user_id)).first()
+                member_type = session.query(MemberType).filter(MemberType.code == 'ADMIN').first()
+                group = session.query(Group).filter(Group.id == group_id, Group.members.any(user_id=user_id,member_type=member_type)).first()
+                if group is not None: # Only admin can add members
+                    email_list = pemail_list.split(';')
+                    for email in email_list:
+                        user = session.query(User).filter(User.email == email).first()
+                        user_sender = session.query(User).filter(User.id == user_id).first()
+                        request_status=session.query(RequestStatus).filter(RequestStatus.code == 'PENDING').first()
+                        request_type=session.query(RequestType).filter(RequestType.code == 'REQUEST_TO_JOIN_GROUP').first()
+                        request_date=datetime.datetime.now()
+                        last_update_date=datetime.datetime.now()
+                        if user is None: #user doesn't exits => create it, and him a email, then add the request to this user.
+                            new_user, str_write = create_user(session,email,random_string())
+                            new_request = Request(sender=user_sender,receiver=new_user,group=group,request_type=request_type,
+                                           request_status=request_status,request_date=request_date,
+                                           last_update_date=last_update_date)
+                            session.add(new_request)
+                            session.commit()
+                            str_write = '{"permission":"ok","user_exist":"nok","request_added":"ok","already_member":"nok"}'
+                        else: #User exist, check if he is already member of the group, if not add the request to this user.
+                            user_group = session.query(Group).filter(Group.id == group_id, Group.members.any(user_id=user_id)).first()
+                            if user_group is None:
+                                new_request = Request(sender=user_sender,receiver=user,group=group,request_type=request_type,
+                                           request_status=request_status,request_date=request_date,
+                                           last_update_date=last_update_date)
+                                session.add(new_request)
+                                session.commit()
+                                str_write = '{"permission":"ok","user_exist":"ok","request_added":"ok","already_member":"nok"}'
+                            else:
+                                str_write = '{"permission":"ok","user_exist":"ok","request_added":"nok","already_member":"ok"}'
+
+
+        except:
+            print("GroupsHandler:Unexpected error:", sys.exc_info()[0])
+            raise
+        finally:
+            print(str_write)
+            self.write(str_write)
+            session.close()
+
 
 class GroupsHandler(tornado.web.RequestHandler):
     def initialize(self, *args, **kwargs):

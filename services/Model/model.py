@@ -241,7 +241,7 @@ class Request(Base):
     is_active = Column(Integer, nullable=False, default=1)
 
     def __repr__(self):
-        return "<Request(id={}, sender={}, sender={}, last_update_date={}, receiver={}, group={}, request_status={}" \
+        return "<Request(id={},sender={}, last_update_date={}, receiver={}, group={}, request_status={}" \
                ", request_type={}, request_date={}, is_active={})>".format(self.id,self.sender
                                                                            ,self.last_update_date,self.receiver
                                                                            ,self.group,self.request_status

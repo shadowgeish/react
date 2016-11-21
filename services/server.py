@@ -13,6 +13,7 @@ class MainHandler(tornado.web.RequestHandler):
 def make_app():
     return tornado.web.Application([
         (r"/add_user", AddUserHandler),
+        (r"/add_group_member", AddGroupMemberHandler),
         (r"/check_user_email", CheckUserEmailHandler),
         (r"/log_user", LogUserHandler),
         (r"/get_user_infos",UserInfosHandler),

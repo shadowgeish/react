@@ -151,35 +151,77 @@ class CheckUserEmailHandler(tornado.web.RequestHandler):
             self.write(str_write)
             session.close()
 
+def random_string(nb_char=6):
+    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(nb_char))
+
+def create_user(session,email,password):
+    new_user = session.query(User).filter(User.email == email,User.email_validation_status != 'NOT_VALIDATED').first()
+    print('new_user = ' + format(new_user))
+    if new_user is not None:
+        str_write = '{"user_added":"no","existing_email":"yes","email_validated":"yes"}'
+        print(str_write)
+        return new_user,str_write
+    else:
+        new_user = session.query(User).filter(User.email == email, User.email_validation_status == 'NOT_VALIDATED').first()
+        print('new_user not validated = ' + format(new_user))
+        email_check_code = random_string()
+        if new_user is not None: # Not validated account, send to validation link
+            session.query(User).filter(User.email == email). \
+                update({User.password: password,User.validation_code: email_check_code}, synchronize_session=False)
+            print('users not validated ' + format(new_user))
+            send_validation_email(('Validation email: ' + format(email_check_code)), email)
+            session.commit()
+            str_write = '{"user_added":"no","existing_email":"yes","email_validated":"no"}'
+            print(str_write)
+            return new_user,str_write
+        else:
+            new_user = User(email=email, password=password, validation_code=email_check_code, email_validation_status = 'NOT_VALIDATED')
+            #print('setup ok ' + format(User.__table__))
+            session.add(new_user)
+            session.commit()
+            print('user inserted ok ' + format(new_user))
+            #users = session.query(User).filter(User.email==email).all()
+            #q = session.query(User).filter(User.name == 'fred')
+            #strr = 'user setup ok ' + format(our_users)
+
+            #strr += 'user setup ed_user.id ' + format(ed_user.id)
+            #for instance in session.query(User).order_by(User.id):
+            #    print(instance.name, instance.fullname)
+            send_validation_email(('Validation email: ' + format(email_check_code)),email)
+            str_write = '{"user_added":"yes","existing_email":"no","email_validated":"no"}'
+            print(str_write)
+
+            return new_user,str_write
+
+def send_validation_email(message, to):
+    # me == the sender's email address
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_SENDER
+        msg['To'] = format([to,'ngoube.serge@gmail.com'])
+        msg['Subject'] = 'Email validation'
+        #message = format(message) + '<BR/><a href="http://localhost:8888/check_user_email?email=ngoube.serge@gmail.com">Validate email<a/>'
+        msg.attach(MIMEText(message))
+        mailserver = smtplib.SMTP('smtp.gmail.com', 587)
+        mailserver.ehlo()
+        mailserver.starttls()
+        mailserver.ehlo()
+        mailserver.login(EMAIL_SENDER, 'azerty8080')
+        mailserver.sendmail(EMAIL_SENDER, [to,'ngoube.serge@gmail.com'], msg.as_string())
+        mailserver.quit()
+    except:
+
+        print("Unexpected error:", sys.exc_info()[0])
+        raise
+    finally:
+        print("end")
+
 class AddUserHandler(tornado.web.RequestHandler):
 
     def initialize(self, *args, **kwargs):
         self.set_header('Access-Control-Allow-Origin', self.request.headers.get('Origin', '*'))
         self.set_header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS')
         self.set_header('Access-Control-Allow-Credentials', 'true')
-
-    def send_validation_email(self, message, to):
-        # me == the sender's email address
-        try:
-            msg = MIMEMultipart()
-            msg['From'] = EMAIL_SENDER
-            msg['To'] = format([to,'ngoube.serge@gmail.com'])
-            msg['Subject'] = 'Email validation'
-            #message = format(message) + '<BR/><a href="http://localhost:8888/check_user_email?email=ngoube.serge@gmail.com">Validate email<a/>'
-            msg.attach(MIMEText(message))
-            mailserver = smtplib.SMTP('smtp.gmail.com', 587)
-            mailserver.ehlo()
-            mailserver.starttls()
-            mailserver.ehlo()
-            mailserver.login(EMAIL_SENDER, 'azerty8080')
-            mailserver.sendmail(EMAIL_SENDER, [to,'ngoube.serge@gmail.com'], msg.as_string())
-            mailserver.quit()
-        except:
-
-            print("Unexpected error:", sys.exc_info()[0])
-            raise
-        finally:
-            print("end")
 
     def get(self):
         print('get')
@@ -195,42 +237,7 @@ class AddUserHandler(tornado.web.RequestHandler):
         try:
             email = self.get_argument('email', True)
             password = self.get_argument('password', True)
-            users = session.query(User).filter(User.email == email,User.email_validation_status != 'NOT_VALIDATED').all()
-            print('users 1 = ' + format(users))
-
-            if len(users) > 1:
-                str_write = '{"user_added":"no","existing_email":"yes","email_validated":"yes"}'
-                print(str_write)
-            else:
-                users = session.query(User).filter(User.email == email, User.email_validation_status == 'NOT_VALIDATED').all()
-                print('users not validated 1 = ' + format(users))
-                email_check_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
-                if len(users) >= 1:
-                    session.query(User).filter(User.email == email). \
-                        update({User.password: password,User.validation_code: email_check_code}, synchronize_session=False)
-                    print('users not validated = 2 ' + format(users))
-                    self.send_validation_email(('Validation email: ' + format(email_check_code)), email)
-                    session.commit()
-                    str_write = '{"user_added":"no","existing_email":"yes","email_validated":"no"}'
-                    print(str_write)
-                else:
-                    new_user = User(email=email, password=password, validation_code=email_check_code, email_validation_status = 'NOT_VALIDATED')
-                    #print('setup ok ' + format(User.__table__))
-                    session.add(new_user)
-                    session.commit()
-                    print('user inserted ok ' + format(new_user))
-                    #users = session.query(User).filter(User.email==email).all()
-                    #q = session.query(User).filter(User.name == 'fred')
-                    #strr = 'user setup ok ' + format(our_users)
-
-                    #strr += 'user setup ed_user.id ' + format(ed_user.id)
-                    #for instance in session.query(User).order_by(User.id):
-                    #    print(instance.name, instance.fullname)
-                    self.send_validation_email(('Validation email: ' + format(email_check_code)),email)
-                    str_write = '{"user_added":"yes","existing_email":"no","email_validated":"no"}'
-                    print(str_write)
-
-            # will do some searching
+            new_user, str_write = create_user(session,email,password)
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
