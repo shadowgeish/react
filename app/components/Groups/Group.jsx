@@ -79,39 +79,48 @@ class Group extends React.Component {
         var data = $('#addMemberInput').select2('data');
 
         var email_array = [];
-        //for each(item in data){
-        for(var i=0;i<data.length;i++){
-            email_array.push(data[i].text);
-        }
-        var email_list = email_array.join(';');
+        alert(data);
+        if(data!= undefined && data != ''){
 
-        var dictParams = {'token': sessionStorage.getItem('token'),
-                          'id':this.props.params.id,
-                          'email_list':email_list
-                          };
-        RunAjaxRequest('http://localhost:8888/add_group_member', dictParams,(data) => {
-            if(data){
-                var col1=[];
-                var col2=[];
-                for(var i=0;i<data.members_data.length;i++){
-                    if(i%2==0){
-                        col1.push(data.members_data[i]);
-                    }
-                    else{
-                        col2.push(data.members_data[i]);
+            //for each(item in data){
+            for(var i=0;i<data.length;i++){
+                email_array.push(data[i].text);
+            }
+            var email_list = email_array.join(';');
+
+            var dictParams = {'token': sessionStorage.getItem('token'),
+                              'id':this.props.params.id,
+                              'email_list':email_list
+                              };
+            RunAjaxRequest('http://localhost:8888/add_group_member', dictParams,(data) => {
+                if(data){
+                    var col1=[];
+                    var col2=[];
+                    if(data.members_data!= undefined && data.members_data != ''){
+
+                        for(var i=0;i<data.members_data.length;i++){
+                            if(i%2==0){
+                                col1.push(data.members_data[i]);
+                            }
+                            else{
+                                col2.push(data.members_data[i]);
+                            }
+                        }
+
+                        this.setState({
+                            groupData: data.group_info,
+                            membersData: data.members_data,
+                            eventsData: data.events_data,
+                            col1:col1,
+                            col2:col2
+                        });
+
                     }
                 }
+            });
 
-                this.setState({
-                    groupData: data.group_info,
-                    membersData: data.members_data,
-                    eventsData: data.events_data,
-                    col1:col1,
-                    col2:col2
-                });
+        }
 
-            }
-        });
 
     }
 
@@ -243,8 +252,6 @@ class Group extends React.Component {
                                                                 <td><em className="ion-ios-body icon-fw mr"></em>Creator</td>
                                                                 <td><span data-type="date" data-mode="popup" className="is-editable text-inherit">{this.state.groupData.creator}</span></td>
                                                             </tr>
-
-
 
                                                             <tr>
                                                                 <td><em className="ion-android-home icon-fw mr"></em>Rates</td>

@@ -23,6 +23,7 @@
     "react-bootstrap": "0.30.6",
     "elemental":"0.6.1",
     "react-dom": "^15.4.0",
+    "react-js-pagination": "*",
     "react-dropzone": "^3.5.3",
     "react-nouislider": "^1.11.0",
     "react-router": "^2.5.2",

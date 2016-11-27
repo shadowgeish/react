@@ -10,6 +10,7 @@ from email.mime.multipart import MIMEMultipart
 from Model.model import *
 from Request.user_services import *
 from sqlalchemy import or_
+import random
 
 class GroupRequestHandler(tornado.web.RequestHandler):
     def initialize(self, *args, **kwargs):
@@ -53,7 +54,8 @@ class GroupRequestHandler(tornado.web.RequestHandler):
                                                     request_type=request_type, request_date=datetime.datetime.now()
                                                   ,request_status=request_status, last_update_date=datetime.datetime.now())
                             session.add(new_request)
-                        else:
+
+
                             missing_email.append(email)
                     session.commit()
                     str_write = '{"status":"ok","missing_email":"' + ",".join(missing_email) + '"}'
@@ -196,13 +198,68 @@ class DashBoardHandler(tornado.web.RequestHandler):
         str_write = '{"status":"nok"}'
         try:
             token = self.get_argument('token', None)
+            request_id = self.get_argument('request_id', None)
+            action = self.get_argument('action', None)
+
             import jwt
             tokenData = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
             user_id = tokenData['id']
-            list_events = getListEvent(sess=session, user_id=user_id, event_type='userEvents')
-            list_payments = getListPayment(sess=session, user_id=user_id, event_type='userPaymentToSend')
-            list_requests = getListRequest(sess=session, user_id=user_id, event_type='userRequests')
-            str_write = '{"permission":"ok","events_data":[' + ','.join(list_events) + '],"payments_data":[' + ','.join(list_payments) + '],"requests_data":[' + ','.join(list_requests) + ']}'
+
+            if action is None:
+                list_events, count_event = getListEvent(sess=session, user_id=user_id, event_type='userEvents')
+                list_payments, count_payment = getListPayment(sess=session, user_id=user_id, event_type='userPaymentToSend')
+                list_requests, count_request = getListRequest(sess=session, receiver_id=user_id, event_type='userRequests')
+                str_write = '{"permission":"ok","payments_data_count":"' + format(count_payment) + '","requests_data_count":"' + format(count_request) + '","events_data_count":"' + format(count_event) + '","events_data":[' + ','.join(list_events) + '],"payments_data":[' + ','.join(list_payments) + '],"requests_data":[' + ','.join(list_requests) + ']}'
+            elif action == 'joinGroup':
+
+                request_status = session.query(RequestStatus).filter(RequestStatus.code == 'APPROVED').one()
+                request = session.query(Request).filter(Request.id == request_id).one()
+                group = session.query(Group).filter(Group.id == request.group_id).one()
+                new_member = session.query(User).filter(User.id == request.receiver_id).one()
+                member_type = session.query(MemberType).filter_by(code='REGULAR').one()
+
+                session.query(Request).filter(Request.id == request_id, Request.receiver==new_member). \
+                        update({Request.request_status: request_status,Request.last_update_date: datetime.datetime.now()}, synchronize_session=False)
+
+                group_member_list = GroupMemberList(last_update_date = datetime.datetime.now(),
+                                                    member_type= member_type,user =new_member,
+                                                    creation_date= datetime.datetime.now())
+                group.members.append(group_member_list)
+
+                event_type = session.query(EventType).filter_by(code='USER_JOIN_GROUP').first()
+                new_event = Event(initiator=new_member, group=request.group, date_event=datetime.datetime.now(),
+                                            last_update_date=datetime.datetime.now(), event_type=event_type)
+                session.add(new_event)
+
+                session.commit()
+                str_write = '{"status":"ok"}'
+
+            elif action == 'acceptRequestWindow':
+                request = session.query(Request).filter(Request.id == request_id).one()
+                group = session.query(Group).filter(Group.id == request.group_id).one()
+                all_initial_position_available = list()
+                all_taken_position = list()
+                all_available_position = list()
+                for i in range(1,group.nb_members):
+                    all_initial_position_available.append(str(i))
+
+                for asso in group.members:
+                    all_taken_position.append(str(asso.user_position))
+
+                for i in all_initial_position_available:
+                    if i not in all_taken_position:
+                        all_available_position.append(str(i))
+
+                if group.position_selection_type.code =='RANDOM':
+                    all_available_position = random.sample(all_available_position,1)
+
+                all_available_position_json = list()
+                for i in all_available_position:
+                    all_available_position_json.append('{"code":"' + str(i) + '","value":"' + str(i) + '"}')
+
+                str_write = '{"permission":"ok","available_rotation_positions":[' + ','.join(all_available_position_json) + '],"position_selection_type":"' + group.position_selection_type.code + '",' \
+                            '"group":"' + group.name + '"}'
+
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
@@ -211,7 +268,7 @@ class DashBoardHandler(tornado.web.RequestHandler):
             self.write(str_write)
 
 
-def getListRequest(sess=None, user_id=None, event_type='userRequests'):
+def getListRequest(sess=None, receiver_id=None, event_type='userRequests', page = 1, max = 6):
     print("Starting:getListRequest")
     if not sess:
         session = create_bound_engine(True)
@@ -223,8 +280,14 @@ def getListRequest(sess=None, user_id=None, event_type='userRequests'):
             print("Starting query")
             #events = session.query(Event).join(GroupMemberList,GroupMemberList.group_id==Event.group_id).filter((Event.initiator_id==user_id) | (GroupMemberList.user_id==user_id))
             status = session.query(RequestStatus).filter(RequestStatus.code == 'PENDING').first()
-            requests = session.query(Request).filter(Request.sender_id==user_id,Request.request_status==status)
+            requests = session.query(Request).filter(Request.receiver_id==receiver_id,Request.request_status==status)
             list_requests = list()
+            count = requests.count()
+            if max:
+                requests = requests.limit(max)
+            if page:
+                requests = requests.offset(max * (page-1))
+
             for request in requests:
                 list_requests.append(request.to_json())
     except:
@@ -234,13 +297,13 @@ def getListRequest(sess=None, user_id=None, event_type='userRequests'):
         print(format(list_requests))
         if not sess:
             session.close()
-        return list_requests
+        return list_requests, count
 
 
-def getListPayment(sess=None, user_id=None, event_type='userPaymentToSend'):
+def getListPayment(sess=None, user_id=None, event_type='userPaymentToSend', page = 1, max = 6):
     print("Starting:getListPayment")
     if not sess:
-        session = create_bound_engine(True)
+        session = create_bound_engine(False)
     else:
         session = sess
     list_payments = None
@@ -250,6 +313,12 @@ def getListPayment(sess=None, user_id=None, event_type='userPaymentToSend'):
             #events = session.query(Event).join(GroupMemberList,GroupMemberList.group_id==Event.group_id).filter((Event.initiator_id==user_id) | (GroupMemberList.user_id==user_id))
             status = session.query(PaymentStatus).filter(PaymentStatus.code == 'PENDING').first()
             payments = session.query(Payment).filter(Payment.sender_id==user_id,Payment.status==status)
+            count = payments.count()
+            if max:
+                payments = payments.limit(max)
+            if page:
+                payments = payments.offset(max * (page-1))
+
             list_payments = list()
             for payment in payments:
                 list_payments.append(payment.to_json())
@@ -260,16 +329,17 @@ def getListPayment(sess=None, user_id=None, event_type='userPaymentToSend'):
         print(format(list_payments))
         if not sess:
             session.close()
-        return list_payments
+        return list_payments, count
 
 
-def getListEvent(sess=None, user_id=None, event_type='userEvents', group_id=None):
+def getListEvent(sess=None, user_id=None, event_type='userEvents', group_id=None, page = 1, max = 6):
     print("Starting:getListEvent")
     if not sess:
         session = create_bound_engine(True)
     else:
         session = sess
     list_events = None
+    count = 0
     try:
         if event_type == 'userEvents':
             print("Starting query")
@@ -278,6 +348,12 @@ def getListEvent(sess=None, user_id=None, event_type='userEvents', group_id=None
                 events = session.query(Event).filter(Event.initiator_id==user_id)
             else:
                 events = session.query(Event).filter(Event.initiator_id==user_id, Event.group_id==group_id)
+            count = events.count()
+            if max:
+                events = events.limit(max)
+            if page:
+                events = events.offset(max * (page-1))
+
             list_events = list()
             for event in events:
                 list_events.append(event.to_json())
@@ -288,7 +364,7 @@ def getListEvent(sess=None, user_id=None, event_type='userEvents', group_id=None
         print(format(list_events))
         if not sess:
             session.close()
-        return list_events
+        return list_events, count
 
 
 class AddGroupMemberHandler(tornado.web.RequestHandler):
@@ -325,13 +401,14 @@ class AddGroupMemberHandler(tornado.web.RequestHandler):
                 if group is not None: # Only admin can add members
                     email_list = pemail_list.split(';')
                     for email in email_list:
-                        user = session.query(User).filter(User.email == email).first()
+                        new_user = session.query(User).filter(User.email == email).first()
                         user_sender = session.query(User).filter(User.id == user_id).first()
                         request_status=session.query(RequestStatus).filter(RequestStatus.code == 'PENDING').first()
                         request_type=session.query(RequestType).filter(RequestType.code == 'REQUEST_TO_JOIN_GROUP').first()
                         request_date=datetime.datetime.now()
                         last_update_date=datetime.datetime.now()
-                        if user is None: #user doesn't exits => create it, and him a email, then add the request to this user.
+                        if new_user is None: #user doesn't exits => create it, and him a email, then add the request to this user.
+                            print('user doesn t exits => create it, and him a email, then add the request to this user.')
                             new_user, str_write = create_user(session,email,random_string())
                             new_request = Request(sender=user_sender,receiver=new_user,group=group,request_type=request_type,
                                            request_status=request_status,request_date=request_date,
@@ -340,9 +417,10 @@ class AddGroupMemberHandler(tornado.web.RequestHandler):
                             session.commit()
                             str_write = '{"permission":"ok","user_exist":"nok","request_added":"ok","already_member":"nok"}'
                         else: #User exist, check if he is already member of the group, if not add the request to this user.
-                            user_group = session.query(Group).filter(Group.id == group_id, Group.members.any(user_id=user_id)).first()
+                            print('User exist, check if he is already member of the group, if not add the request to this user.')
+                            user_group = session.query(Group).filter(Group.id == group_id, Group.members.any(user_id=new_user.id)).first()
                             if user_group is None:
-                                new_request = Request(sender=user_sender,receiver=user,group=group,request_type=request_type,
+                                new_request = Request(sender=user_sender,receiver=new_user,group=group,request_type=request_type,
                                            request_status=request_status,request_date=request_date,
                                            last_update_date=last_update_date)
                                 session.add(new_request)
@@ -403,8 +481,11 @@ class GroupsHandler(tornado.web.RequestHandler):
                         list_member = list()
                         for asso in group.members:
                             list_member.append(asso.user.to_short_json())
-                        list_events= getListEvent(sess = session, user_id=user_id,event_type='userEvents',group_id=group_id)
-                        str_write = '{"permission":"ok","group_info":' + group.to_json() + ',"members_data":[' + ','.join(list_member) + '],"events_data":[' + ','.join(list_events) + ']}'
+                        list_events,count = getListEvent(sess = session, user_id=user_id,event_type='userEvents',group_id=group_id)
+                        print(' group_info = {}'.format(group.to_json()))
+                        print(' members_data = {}'.format(','.join(list_member) ))
+                        print(' list_events = {}'.format(','.join(list_events) ))
+                        str_write = '{"permission":"ok","group_info":' + group.to_json() + ',"members_data":['+ ','.join(list_member) +'],"events_data":[' + ','.join(list_events) + ']}'
                     else:
                         str_write = '{"permission":"nok","group_info":[],"members_data":[],"events_data":[]}'
 

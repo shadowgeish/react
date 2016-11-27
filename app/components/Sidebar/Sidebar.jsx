@@ -146,7 +146,7 @@ class Sidebar extends React.Component {
                     <nav className="sidebar-nav">
                         <div className="form-group text-center">
                             <h4><Button bsStyle="primary" onClick={this.open.bind(this)} className="btn-raised mr ripple">Create a new Group</Button></h4>
-                            <Modal show={this.state.showModal} bsSize="large" backdrop="true" autoFocus={this.state.autoFocus} keyboard={this.state.keyboard} onHide={this.close.bind(this)}>
+                            <Modal show={this.state.showModal} backdrop="true" autoFocus={this.state.autoFocus} keyboard={this.state.keyboard} onHide={this.close.bind(this)}>
                               <Modal.Header closeButton>
                                 <Modal.Title>Create un new group</Modal.Title>
                               </Modal.Header>

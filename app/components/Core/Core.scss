@@ -206,3 +206,7 @@ footer {
         z-index: -1;
     }
 }
+
+.pagination .rounded_pagination
+{ border-radius: 50% !important;margin: 0 7px; color:#fa4b2a; box-shadow:2px 2px 2px #888;}
+.pagination>li.rounded_pagination.active{background:#44c764;}

@@ -205,8 +205,10 @@ class RequestType(Base):
     def __repr__(self):
         return "<RequestType(id={}, code={}, category={}, is_active={})>".format(self.id,self.code,self.category, self.is_active)
 
+
     def to_json(self):
-        return '{"id":"' + format(self.id) + '","code":"' + format(self.code) + '"}'
+        return '{"id":"' + format(self.id) + '","code":"' + format(self.code) + '","' + format(self.code) + '":"True"}'
+
     #['REQUEST_FOR_REGULAR_PAYMENT','REQUEST_FOR_OTHER_PAYMENT','REQUEST_TO_JOIN_GROUP']
 
 class RequestStatus(Base):
@@ -225,6 +227,7 @@ class RequestStatus(Base):
 
 class Request(Base):
     __tablename__ = 'request'
+    Base.metadata,
     id = Column(Integer, primary_key=True)
     sender_id = Column(Integer, ForeignKey('user.id'))
     sender = relationship("User", foreign_keys=[sender_id])
@@ -249,8 +252,10 @@ class Request(Base):
 
     def to_json(self):
         return '{"id":"' + format(self.id) + '","sender":"' + format(self.sender.first_name) + '(' + format(self.sender.email) + ')",' \
-                '"receiver":"' + format(self.receiver.first_name) + '(' + format(self.receiver.email) + ')","group":"' + format(self.group.nane) + '",' \
-                '"request_type":"' + format(self.request_type.code) + '","group_id":"' + format(self.group.id) + '"}'
+                '"receiver":"' + format(self.receiver.first_name) + '(' + format(self.receiver.email) + ')","group":"' + format(self.group.name) + '",' \
+                '"request_type":"' + format(self.request_type.code) + '","group_id":"' + format(self.group.id) + '",' \
+                '"request_status":"' + format(self.request_status.code) + '","' + format(self.request_type.code) + '":"True",' \
+                '"group_rotation_type":"' + format(self.group.position_selection_type.code) + '"}'
 
 class PaymentType(Base):
     __tablename__ = 'payment_type'
@@ -419,6 +424,13 @@ class Group(Base):
     members = relationship("GroupMemberList", back_populates="group")
     last_update_date = Column(DateTime, nullable=True)
     is_active = Column(Integer, nullable=False, default=1)
+
+    @hybrid_property
+    def list_members(self):
+        list_member =[]
+        for asso in self.members:
+            list_member.append(asso.user)
+        return list_member
 
     def to_json(self):
         return '{"id":"' + format(self.id) + '","name":"' + format(self.name) + '",' \
