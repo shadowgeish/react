@@ -25,7 +25,8 @@ class Sidebar extends React.Component {
             groupTypes:[],
             currencies:[],
             rotationTypes:[],
-            keyboard:true
+            keyboard:true,
+            alertVisible: 'hidden'
         };
     }
 
@@ -40,6 +41,9 @@ class Sidebar extends React.Component {
 
 
     createNewGroup() {
+        alert(this.refs.allowEarlyPrepayment.value);
+        alert(this.refs.nbDaysBeforePenalty.value);
+        alert(this.refs.delayPenaltyAmount.value);
 
         const newGroupName = this.refs.newGroupName.value;
         const newGroupType = this.refs.newGroupType.value;
@@ -51,6 +55,9 @@ class Sidebar extends React.Component {
         const newGroupCurrency = this.refs.newGroupCurrency.value;
         const newGroupNbMembers = this.refs.newGroupNbMembers.value;
         const newGroupRotationType = this.refs.newGroupRotationType.value;
+        const delayPenaltyAmount = this.refs.delayPenaltyAmount.value;
+        const nbDaysBeforePenalty = this.refs.nbDaysBeforePenalty.value;
+        const allowEarlyPrepayment = this.refs.allowEarlyPrepayment.value;
 
         var dictParams = {
             'token':sessionStorage.getItem('token'),
@@ -63,18 +70,23 @@ class Sidebar extends React.Component {
             'newGroupDueDay': newGroupDueDay,
             'newGroupCurrency':newGroupCurrency,
             'newGroupNbMembers': newGroupNbMembers,
-            'newGroupRotationType':newGroupRotationType
+            'newGroupRotationType':newGroupRotationType,
+            'delayPenaltyAmount':delayPenaltyAmount,
+            'allowEarlyPrepayment':allowEarlyPrepayment,
+            'nbDaysBeforePenalty':nbDaysBeforePenalty
+
         };
 
         RunAjaxRequest('http://localhost:8888/add_group', dictParams,(data) => {
             if(data){
                 alert(data.group_added);
                 if(data.group_added == 'yes'){
-                    swal('', '', 'success');
+                    this.handleAlertShow('#success-group-creation');
                 }
                 else
                 {
-                    $('#existing-group-text').hide().removeClass('hidden').show(500);
+                    //this.handleAlertDismiss();
+                    //this.handleAlertShow('#success-group-creation');
                 }
 
             }
@@ -99,6 +111,14 @@ class Sidebar extends React.Component {
 
 
 
+    }
+
+    handleAlertShow(textId) {
+         $(textId).hide().removeClass('hidden').show(500);
+    }
+
+    handleAlertDismiss() {
+         $('#success-group-creation').hide().addClass('hidden').show(500);
     }
 
     routeActive(paths) {
@@ -152,7 +172,15 @@ class Sidebar extends React.Component {
                               </Modal.Header>
                               <Modal.Body>
 
-                                <div className="text-danger text-center hidden" id ="existing-group-text">The name already exists !</div>
+                                <div className="text-danger text-center hidden" id ="success-group-creation">The name already exists !
+                                    <Alert bsStyle="success" onDismiss={this.handleAlertDismiss.bind(this)}>
+                                      <h4> Congratulation the group has been created </h4>
+                                      <p>Click here to open add members to the group or click on close to create another group.</p>
+                                      <p>
+                                        <Button bsStyle="primary">Close</Button>
+                                      </p>
+                                    </Alert>
+                                </div>
 
                                 <div className="row">
                                     <div className="col-sm-6">
@@ -177,6 +205,7 @@ class Sidebar extends React.Component {
                                         </div>
                                     </div>
 
+
                                     <div className="col-sm-12">
                                         <div className="mda-form-group">
                                             <div className="mda-form-control">
@@ -186,6 +215,8 @@ class Sidebar extends React.Component {
                                             </div>
                                         </div>
                                     </div>
+
+
 
                                     <div className="col-sm-6">
                                         <div className="mda-form-group">
@@ -262,9 +293,39 @@ class Sidebar extends React.Component {
                                         </div>
                                     </div>
 
+                                    <div className="col-sm-6">
+                                        <div className="mda-form-group">
+                                            <div className="checkbox c-checkbox">
+                                                <label>
+                                                    <input type="checkbox" defaultChecked ref="allowEarlyPrepayment"/><span className="ion-checkmark-round"></span> Allow early pre-payment
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="col-sm-12">
+                                        <div className="mda-form-group input-group mda-input-group">
+
+                                            <div className="mda-form-control">
+                                                <input required="" ref="delayPenaltyAmount" tabIndex="0" defaultValue="0" aria-required="true" aria-invalid="true" className="form-control"/>
+                                                <div className="mda-form-control-line"></div>
+                                                <label>Penalty of </label>
+                                            </div>
+                                            <span className="input-group-addon"> after </span>
+                                            <div className="mda-form-control">
+                                                <input required="" ref="nbDaysBeforePenalty"  tabIndex="0" defaultValue="0" aria-required="true" aria-invalid="true" className="form-control"/>
+                                                <div className="mda-form-control-line"></div>
+                                                <label>Days</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
 
                                     <div className="col-sm-12 text-center">
-                                        <h1><Button bsStyle="primary" onClick={this.createNewGroup.bind(this)} className="btn-raised mr ripple">Create my new group</Button></h1>
+                                        <h1>
+                                        <Button bsStyle="success" onClick={this.createNewGroup.bind(this)} className="btn-raised mr ripple">Create my new group</Button>
+                                        <Button bsStyle="primary" className="btn-raised mr ripple" onClick={this.close.bind(this)} >Cancel</Button>
+                                        </h1>
                                     </div>
                                 </div>
 

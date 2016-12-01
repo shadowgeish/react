@@ -53,6 +53,8 @@ def init_data():
 
     session.add(PaymentType(code="GROUP_REGULAR_PAYMENT_DUE"))
     session.add(PaymentType(code="NON_REGULAR_GROUP_PAYMENT"))
+    session.add(PaymentType(code="GROUP_REGULAR_INTEREST_PAYMENT_DUE"))
+
 
     session.add(PaymentStatus(code="PENDING"))
     session.add(PaymentStatus(code="DONE"))
@@ -64,8 +66,10 @@ def init_data():
 
 
     new_user = User(first_name='Serge',email='test@gmail.com', password='test', validation_code='test', email_validation_status = 'VALIDATED')
+    new_user2 = User(first_name='Serge',email='test2@gmail.com', password='test', validation_code='test', email_validation_status = 'VALIDATED')
     #print('setup ok ' + format(User.__table__))
     session.add(new_user)
+    session.add(new_user2)
 
 
 

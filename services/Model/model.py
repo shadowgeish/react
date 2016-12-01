@@ -23,6 +23,9 @@ class GroupMemberList(Base):
     user_position = Column(Integer, nullable=True)
     is_active = Column(Integer, nullable=False, default=1)
 
+    def __repr__(self):
+        return "<GroupMemberList(member_type={}, group={}, user={}, user_position={})>".format(self.member_type,self.group, self.user, self.user_position)
+
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
@@ -240,6 +243,7 @@ class Request(Base):
     request_type_id = Column(Integer, ForeignKey('request_type.id'))
     request_type = relationship("RequestType")
     request_date = Column(DateTime, nullable=True)
+    comments = Column(String(500), nullable=True) # if the reques is rejected, the user needs to provide a comment if he wants.
     last_update_date = Column(DateTime, nullable=True)
     is_active = Column(Integer, nullable=False, default=1)
 
@@ -306,6 +310,7 @@ class Payment(Base):
     actual_payment_date = Column(DateTime, nullable=True)
     actual_amount_paid = Column(Float, nullable=True)
     last_update_date = Column(DateTime, nullable=True)
+    master_payment_id = Column(Integer, nullable=True)
     is_active = Column(Integer, nullable=False, default=1)
 
     def __repr__(self):
@@ -422,6 +427,9 @@ class Group(Base):
     position_selection_type_id = Column(Integer, ForeignKey('position_selection_type.id'))
     position_selection_type = relationship("PositionSelectionType")
     members = relationship("GroupMemberList", back_populates="group")
+    allow_prepayment = Column(Integer, default=1)
+    delay_penalty_amount = Column(Float, default=0)
+    nb_days_delay_before_penalty = Column(Float, default=999)
     last_update_date = Column(DateTime, nullable=True)
     is_active = Column(Integer, nullable=False, default=1)
 
@@ -439,7 +447,7 @@ class Group(Base):
                 '"end_date":"' + format(self.end_date) + '","type":"' + format(self.type.code) + '",' \
                 '"due_day":"' + format(self.due_day) + '","frequency":"' + format(self.frequency) + '",' \
                 '"position_selection_type":"' + format(self.position_selection_type.code) + '","currency":"' + format(self.currency.code) + '","nb_members":"' + format(len(self.members)) + '",' \
-                '"type_code":"' + format(self.type.code) + '","nb_members":"' + format(len(self.members)) + '"}'
+                '"type_code":"' + format(self.type.code) + '","nb_members":"' + format(len(self.members)) + '","allow_prepayment":"' + format(self.allow_prepayment) + '"}'
 
     def __repr__(self):
-        return "<Group(name='%s', description='%s', date_creation='%s', amount='%s', rate='%s', type='%s', start_date='%s')>" % (self.name, self.description, self.date_creation, self.amount,self.rate, self.type_id, self.start_date)
+        return "<Group(name='%s', description='%s', date_creation='%s', amount='%s', rate='%s', type='%s', start_date='%s' , allow_prepayment='%s')>" % (self.name, self.description, self.date_creation, self.amount,self.rate, self.type_id, self.start_date, self.allow_prepayment)

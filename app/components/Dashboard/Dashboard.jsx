@@ -78,7 +78,7 @@ class Dashboard extends React.Component {
 
     joinGroup(requestId){
 
-        var dictParams = {'token': sessionStorage.getItem('token'), 'request_id':requestId, 'action':'joinGroup'};
+        var dictParams = {'token': sessionStorage.getItem('token'), 'request_id':requestId, 'action':'joinGroup', 'position':this.refs.position.value};
         RunAjaxRequest('http://localhost:8888/dashboard', dictParams,(data) => {
             if(data){
                 if(data.status == 'ok'){
@@ -252,7 +252,7 @@ class Dashboard extends React.Component {
                                         <Modal show={this.state.RequestShowModal} backdrop="true" autoFocus={this.state.RequestAutoFocus} keyboard={this.state.RequestKeyboard} onHide={this.RequestClose.bind(this)}>
                                           <Modal.Header closeButton>
                                             <Modal.Title>Accept to join {this.state.ModalRequestGroup} group</Modal.Title>
-                                            <div className="text-center"><small>Request from {this.state.ModalRequestSender}</small></div>
+                                            <div className="text-center"><small>Request from {this.state.ModalRequestSender} - Position selection : {this.state.positionSelectionType}</small></div>
 
                                           </Modal.Header>
                                           <Modal.Body>
@@ -268,6 +268,8 @@ class Dashboard extends React.Component {
                                                     <div  className="mda-form-control-line"></div>
                                                     <label>Rotation Postition</label>
                                                 </div>
+
+
 
 
 

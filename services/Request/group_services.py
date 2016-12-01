@@ -200,6 +200,7 @@ class DashBoardHandler(tornado.web.RequestHandler):
             token = self.get_argument('token', None)
             request_id = self.get_argument('request_id', None)
             action = self.get_argument('action', None)
+            position = self.get_argument('position', None)
 
             import jwt
             tokenData = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
@@ -215,16 +216,17 @@ class DashBoardHandler(tornado.web.RequestHandler):
                 request_status = session.query(RequestStatus).filter(RequestStatus.code == 'APPROVED').one()
                 request = session.query(Request).filter(Request.id == request_id).one()
                 group = session.query(Group).filter(Group.id == request.group_id).one()
-                new_member = session.query(User).filter(User.id == request.receiver_id).one()
+                new_member = session.query(User).filter(User.id == user_id).one()
                 member_type = session.query(MemberType).filter_by(code='REGULAR').one()
-
-                session.query(Request).filter(Request.id == request_id, Request.receiver==new_member). \
-                        update({Request.request_status: request_status,Request.last_update_date: datetime.datetime.now()}, synchronize_session=False)
+                request.request_status = request_status
+                request.last_update_date = datetime.datetime.now()
 
                 group_member_list = GroupMemberList(last_update_date = datetime.datetime.now(),
                                                     member_type= member_type,user =new_member,
-                                                    creation_date= datetime.datetime.now())
+                                                    creation_date= datetime.datetime.now(), group= group, user_position=position)
                 group.members.append(group_member_list)
+                session.flush()
+                #session.add(group_member_list)
 
                 event_type = session.query(EventType).filter_by(code='USER_JOIN_GROUP').first()
                 new_event = Event(initiator=new_member, group=request.group, date_event=datetime.datetime.now(),
@@ -307,6 +309,7 @@ def getListPayment(sess=None, user_id=None, event_type='userPaymentToSend', page
     else:
         session = sess
     list_payments = None
+    count = 0
     try:
         if event_type == 'userPaymentToSend':
             print("Starting query")
@@ -549,6 +552,7 @@ class StartGroupHandler(tornado.web.RequestHandler):
             session.add(new_event)
 
             type = session.query(PaymentType).filter(PaymentType.code == 'GROUP_REGULAR_PAYMENT_DUE').first()
+            type_interest = session.query(PaymentType).filter(PaymentType.code == 'GROUP_REGULAR_INTEREST_PAYMENT_DUE').first()
             status = session.query(PaymentStatus).filter(PaymentStatus.code == 'PENDING').first()
             group_members = group.members
             payment_date = first_payment_date
@@ -615,6 +619,11 @@ class AddGroupHandler(tornado.web.RequestHandler):
             newGroupCurrency_id = self.get_argument('newGroupCurrency', None)
             nb_members = self.get_argument('newGroupNbMembers', None)
             position_selection_type_id = self.get_argument('newGroupRotationType', None)
+
+            delayPenaltyAmount = self.get_argument('delayPenaltyAmount', None)
+            allowEarlyPrepayment = self.get_argument('allowEarlyPrepayment', None)
+            nbDaysBeforePenalty = self.get_argument('nbDaysBeforePenalty', None)
+
             token = self.get_argument('token', None)
             print('toket =' + format(token))
             import jwt
@@ -637,7 +646,9 @@ class AddGroupHandler(tornado.web.RequestHandler):
                 new_group = Group(name=newGroupName, description=newGroupDescription, date_creation=datetime.datetime.now(),
                                   amount=newGroupAmount, rate=newGroupRate,type=type,creator=our_user,
                                   due_day=newGroupDueDay, frequency=newGroupFrequency,currency=currency,
-                                  position_selection_type=position_selection_type,nb_members=nb_members)
+                                  position_selection_type=position_selection_type,nb_members=nb_members,
+                                  allow_prepayment=allowEarlyPrepayment, delay_penalty_amount=delayPenaltyAmount,
+                                  nb_days_delay_before_penalty=nbDaysBeforePenalty)
 
                 #session.commit()
                 #print('setup ok ' + format(User.__table__))
