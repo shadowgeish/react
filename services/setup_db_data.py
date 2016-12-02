@@ -65,8 +65,10 @@ def init_data():
     session.add(PositionSelectionType(code="FIRST_ARRIVED_FIRST_SERVED"))
 
 
-    new_user = User(first_name='Serge',email='test@gmail.com', password='test', validation_code='test', email_validation_status = 'VALIDATED')
-    new_user2 = User(first_name='Serge',email='test2@gmail.com', password='test', validation_code='test', email_validation_status = 'VALIDATED')
+    new_user = User(first_name='Serge',email='test@gmail.com', password='test', validation_code='test', email_validation_status = 'VALIDATED',date_creation:datetime.datetime.now(),
+                            last_update_date:datetime.datetime.now())
+    new_user2 = User(first_name='Serge',email='test2@gmail.com', password='test', validation_code='test', email_validation_status = 'VALIDATED',date_creation:datetime.datetime.now(),
+                            last_update_date:datetime.datetime.now())
     #print('setup ok ' + format(User.__table__))
     session.add(new_user)
     session.add(new_user2)

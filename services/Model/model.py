@@ -29,9 +29,8 @@ class GroupMemberList(Base):
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    name = Column(String(50), nullable=True)
-    first_name = Column(String(50), nullable=True)
-    sur_name = Column(String(50), nullable=True)
+    first_name = Column(String(50), nullable=False)
+    sur_name = Column(String(50), nullable=True, default="-----")
     gender = Column(String(50), nullable=True)
     password = Column(String(250), nullable=True)
     email = Column(String(250), nullable=True)
@@ -60,14 +59,14 @@ class User(Base):
     is_active = Column(Integer, nullable=False, default=1)
 
     def to_short_json(self):
-        return '{"id":"' + format(self.id) + '","name":"' + format(self.name) + '",' \
+        return '{"id":"' + format(self.id) + '",' \
                 '"first_name":"' + format(self.first_name) + '","sur_name":"' + format(self.sur_name) + '",' \
                 '"gender":"' + format(self.gender) + '","email":"' + format(self.email) + '","photo_path":"' + format(self.photo_path) + '"' \
                 '}'
 
 
     def to_json(self):
-        return '{"id":"' + format(self.id) + '","name":"' + format(self.name) + '",' \
+        return '{"id":"' + format(self.id) + '",' \
                 '"first_name":"' + format(self.first_name) + '","sur_name":"' + format(self.sur_name) + '",' \
                 '"gender":"' + format(self.gender) + '","email":"' + format(self.email) + '","photo_path":"' + format(self.photo_path) + '",' \
                 '"id_scan_path":"' + format(self.id_scan_path) + '","id_scan_expire_date":"' + format(self.id_scan_expire_date) + '",' \

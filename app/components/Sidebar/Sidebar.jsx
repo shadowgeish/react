@@ -41,10 +41,6 @@ class Sidebar extends React.Component {
 
 
     createNewGroup() {
-        alert(this.refs.allowEarlyPrepayment.value);
-        alert(this.refs.nbDaysBeforePenalty.value);
-        alert(this.refs.delayPenaltyAmount.value);
-
         const newGroupName = this.refs.newGroupName.value;
         const newGroupType = this.refs.newGroupType.value;
         const newGroupDescription = this.refs.newGroupDescription.value;
@@ -57,7 +53,13 @@ class Sidebar extends React.Component {
         const newGroupRotationType = this.refs.newGroupRotationType.value;
         const delayPenaltyAmount = this.refs.delayPenaltyAmount.value;
         const nbDaysBeforePenalty = this.refs.nbDaysBeforePenalty.value;
-        const allowEarlyPrepayment = this.refs.allowEarlyPrepayment.value;
+        var allowEarlyPrepayment = 1;
+        if(this.refs.allowEarlyPrepayment.value=='on'){
+            allowEarlyPrepayment = 1
+        }
+        else{
+            allowEarlyPrepayment = 0;
+        }
 
         var dictParams = {
             'token':sessionStorage.getItem('token'),
@@ -177,7 +179,7 @@ class Sidebar extends React.Component {
                                       <h4> Congratulation the group has been created </h4>
                                       <p>Click here to open add members to the group or click on close to create another group.</p>
                                       <p>
-                                        <Button bsStyle="primary">Close</Button>
+                                        <Button bsStyle="primary" onClick={this.handleAlertDismiss.bind(this)}>Close</Button>
                                       </p>
                                     </Alert>
                                 </div>
@@ -343,7 +345,7 @@ class Sidebar extends React.Component {
 
                             <li className={this.routeActive('/groups') ? 'active':''}>
                                 <Link to="groups" className="ripple">
-                                    <span className="nav-icon">
+                                    <span className="pull-right nav-label"><span className="badge bg-primary">2</span></span><span className="nav-icon">
                                     <img src="" data-svg-replace="img/icons/ios-people.svg" alt="MenuItem" className="hidden" /></span>
                                     <span>Groups</span>
                                 </Link>
@@ -351,7 +353,7 @@ class Sidebar extends React.Component {
 
                             <li className={this.routeActive('/account') ? 'active':''}>
                                 <Link to="account" className="ripple">
-                                    <span className="pull-right nav-label"><span className="badge bg-success">2</span></span><span className="nav-icon">
+                                    <span className="nav-icon">
                                     <img src="" data-svg-replace="img/icons/cash.svg" alt="MenuItem" className="hidden" /></span>
                                     <span>Account</span>
                                 </Link>
@@ -360,7 +362,7 @@ class Sidebar extends React.Component {
 
                             <li className={this.routeActive('/profile') ? 'active':''}>
                                 <Link to="profile" className="ripple">
-                                    <span className="pull-right nav-label"><span className="badge bg-warning">2</span></span><span className="nav-icon">
+                                    <span className="nav-icon">
                                     <img src="" data-svg-replace="img/icons/ios-person.svg" alt="MenuItem" className="hidden" /></span>
                                     <span>My Profile</span>
                                 </Link>
@@ -368,7 +370,7 @@ class Sidebar extends React.Component {
 
                             <li className={this.routeActive('/faq') ? 'active':''}>
                                 <Link to="faq" className="ripple">
-                                    <span className="pull-right nav-label"><span className="badge bg-success">2</span></span><span className="nav-icon">
+                                    <span className="nav-icon">
                                     <img src="" data-svg-replace="img/icons/help-circled.svg" alt="MenuItem" className="hidden" /></span>
                                     <span>Simulation</span>
                                 </Link>
@@ -376,7 +378,7 @@ class Sidebar extends React.Component {
 
                             <li className={this.routeActive('/faq') ? 'active':''}>
                                 <Link to="faq" className="ripple">
-                                    <span className="pull-right nav-label"><span className="badge bg-success">2</span></span><span className="nav-icon">
+                                    <span className="nav-icon">
                                     <img src="" data-svg-replace="img/icons/help-circled.svg" alt="MenuItem" className="hidden" /></span>
                                     <span>FAQ</span>
                                 </Link>
@@ -384,7 +386,7 @@ class Sidebar extends React.Component {
 
                             <li className={this.routeActive('/aboutus') ? 'active':''}>
                                 <Link to="aboutus" className="ripple">
-                                    <span className="pull-right nav-label"><span className="badge bg-success">2</span></span><span className="nav-icon">
+                                    <span className="nav-icon">
                                     <img src="" data-svg-replace="img/icons/ribbon-b.svg" alt="MenuItem" className="hidden" /></span>
                                     <span>About us</span>
                                 </Link>

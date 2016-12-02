@@ -40,34 +40,13 @@ class UserInfosHandler(tornado.web.RequestHandler):
                 str_write = '{"user_exist":"no"}'
             else:
                 user = users[0]
-                str_write = '{"user_exist":"yes","first_name":"' + format(user.first_name) + \
-                            '","sur_name":"' + format(user.sur_name) + \
-                            '","gender":"' + format(user.gender) + \
-                            '","photo_path":"' + format(user.photo_path) + \
-                            '","id_scan_path":"' + format(user.id_scan_path) + \
-                            '","id_scan_expire_date":"' + format(user.id_scan_expire_date) + \
-                            '","credit_score":"' + format(user.credit_score) + \
-                            '","credit_score_date":"' + format(user.credit_score_date) + \
-                            '","date_creation":"' + format(user.date_creation) + \
-                            '","date_of_birth":"' + format(user.date_of_birth) + \
-                            '","country_of_birth":"' + format(user.country_of_birth) + \
-                            '","town_of_birth":"' + format(user.town_of_birth) + \
-                            '","address_number":"' + format(user.address_number) + \
-                            '","address_street_name":"' + format(user.address_street_name) + \
-                            '","address_post_code":"' + format(user.address_post_code) + \
-                            '","address_town":"' + format(user.address_town) + \
-                            '","address_country":"' + format(user.address_country) + \
-                            '","contact_home_phone":"' + format(user.contact_home_phone) + \
-                            '","contact_mobile_phone":"' + format(user.contact_mobile_phone) + \
-                            '","email":"' + format(user.email) + '"}'
-        except:
+                str_write = user.to_json()
             print("Unexpected error:", sys.exc_info()[0])
             raise
         finally:
             print(str_write)
             self.write(str_write)
             session.close()
-
 
 class LogUserHandler(tornado.web.RequestHandler):
     def initialize(self, *args, **kwargs):
@@ -136,7 +115,7 @@ class CheckUserEmailHandler(tornado.web.RequestHandler):
                 print(' compararing ' +  format(uvalidation_code) + ' and ' + format(validation_code))
                 if uvalidation_code == validation_code:
                     session.query(User).filter(User.email == email). \
-                        update({User.email_validation_status: 'VALIDATED'}, synchronize_session=False)
+                        update({User.email_validation_status: 'VALIDATED', last_update_date:datetime.datetime.now()}, synchronize_session=False)
                     session.commit()
                     import jwt
                     token = jwt.encode({'email': email}, SECRET_KEY, algorithm='HS256')
@@ -167,7 +146,7 @@ def create_user(session,email,password):
         email_check_code = random_string()
         if new_user is not None: # Not validated account, send to validation link
             session.query(User).filter(User.email == email). \
-                update({User.password: password,User.validation_code: email_check_code}, synchronize_session=False)
+                update({User.password: password,User.validation_code: email_check_code,last_update_date:datetime.datetime.now()}, synchronize_session=False)
             print('users not validated ' + format(new_user))
             send_validation_email(('Validation email: ' + format(email_check_code)), email)
             session.commit()
@@ -175,7 +154,10 @@ def create_user(session,email,password):
             print(str_write)
             return new_user,str_write
         else:
-            new_user = User(email=email, password=password, validation_code=email_check_code, email_validation_status = 'NOT_VALIDATED')
+            new_user = User(email=email, password=password, validation_code=email_check_code,
+                            email_validation_status = 'NOT_VALIDATED',
+                            date_creation:datetime.datetime.now(),
+                            last_update_date:datetime.datetime.now())
             #print('setup ok ' + format(User.__table__))
             session.add(new_user)
             session.commit()

@@ -9,7 +9,7 @@ class Profile extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {first_name: '', email: '-'};
+        this.state = {user_infos: {}};
     }
 
     componentWillMount() {
@@ -21,16 +21,7 @@ class Profile extends React.Component {
         var dictParams = {'token': sessionStorage.getItem('token')};
         RunAjaxRequest('http://localhost:8888/get_user_infos', dictParams,(data) => {
             if(data){
-                this.setState({
-                    first_name: data.first_name, email: data.email, gender: data.gender,
-                    sur_name: data.sur_name, photo_path: data.photo_path,
-                    credit_score: data.credit_score, credit_score_date: data.credit_score_date,
-                    date_creation: data.date_creation, date_of_birth: data.date_of_birth,
-                    address_number: data.address_number, address_street_name: data.address_street_name,
-                    address_post_code: data.address_post_code, address_town: data.address_town,
-                    address_country: data.address_country, contact_home_phone: data.contact_home_phone,
-                    contact_mobile_phone: data.contact_mobile_phone,photo_path: data.photo_path,
-                    country_of_birth: data.country_of_birth, town_of_birth: data.town_of_birth
+                this.setState({user_infos:data
                 });
             }
         });
@@ -57,6 +48,8 @@ class Profile extends React.Component {
                                 <h5 className="card-heading pb0">
                                     {/* START dropdown */}
                                     <div className="pull-right">
+                                        <button id="edit-enable" type="button" className="btn-raised btn btn-warning btn-circle btn-lg"><em className="ion-edit"></em></button>
+                                        <button id="edit-disable" type="submit" className="btn-raised btn btn-success btn-circle btn-lg hidden"><em className="ion-checkmark-round"></em></button>
                                         <Dropdown pullRight >
                                             <Dropdown.Toggle bsStyle="" noCaret className="btn-flat btn-flat-icon">
                                               <em className="ion-android-more-vertical"></em>
@@ -76,22 +69,25 @@ class Profile extends React.Component {
 
                                             <tr>
                                                 <td><em className="ion-email icon-fw mr"></em>Email</td>
-                                                <td><span className="is-editable text-inherit"><a href="#">{this.state.email}</a></span></td>
+                                                <td><span className="is-editable text-inherit"><a href="#">{this.state.user_infos.email}</a></span></td>
                                             </tr>
 
                                             <tr>
-                                                <td><em className="ion-document-text icon-fw mr"></em>First name</td>
-                                                <td>{this.state.first_name}</td>
+                                                <td><em className="ion-document-text icon-fw mr"></em>First & last name</td>
+                                                <td>
+                                                    <span className="is-editable text-inherit"><a href="#">{this.state.user_infos.first_name}</a></span>
+                                                    <span className="is-editable text-inherit"><a href="#">{this.state.user_infos.last_name}</a></span>
+                                                </td>
                                             </tr>
 
                                             <tr>
                                                 <td><em className="ion-egg icon-fw mr"></em>Birthday</td>
-                                                <td><span data-type="date" data-mode="popup" className="is-editable text-inherit">10/11/2000</span></td>
+                                                <td><span data-type="date" data-mode="popup" data-placement="bottom" className="is-editable text-inherit">{this.state.user_infos.date_of_birth}</span></td>
                                             </tr>
 
                                             <tr>
                                                 <td><em className="ion-ios-body icon-fw mr"></em>Member since</td>
-                                                <td><span data-type="date" data-mode="popup" className="is-editable text-inherit">05/11/2015</span></td>
+                                                <td>{this.state.user_infos.date_creation}</td>
                                             </tr>
 
                                             <tr>
@@ -102,43 +98,27 @@ class Profile extends React.Component {
                                                 <tr>
                                                 <td><em className="ion-android-home icon-fw mr"></em>Address</td>
                                                 <td>
-                                                    <span className="is-editable text-inherit">{this.state.address_number}</span>
-                                                    <span className="is-editable text-inherit">{this.state.address_street_name}</span>
-                                                    <span className="is-editable text-inherit">{this.state.contact_home_phone}</span>
-                                                    <span className="is-editable text-inherit">{this.state.address_post_code}</span>
-                                                    <span className="is-editable text-inherit">{this.state.address_country}</span>
+                                                    <span className="is-editable text-inherit">{this.state.user_infos.address_number}</span>
+                                                    <span className="is-editable text-inherit">{this.state.user_infos.address_street_name}</span>
+                                                    <span className="is-editable text-inherit">{this.state.user_infos.contact_home_phone}</span>
+                                                    <span className="is-editable text-inherit">{this.state.user_infos.address_post_code}</span>
+                                                    <span className="is-editable text-inherit">{this.state.user_infos.address_country}</span>
                                                 </td>
                                             </tr>
 
                                             <tr>
                                                 <td><em className="ion-ios-telephone icon-fw mr"></em>Home phone</td>
-                                                <td><span className="is-editable text-inherit">{this.state.contact_home_phone}</span></td>
+                                                <td><span className="is-editable text-inherit">{this.state.user_infos.contact_home_phone}</span></td>
                                             </tr>
 
                                             <tr>
                                                 <td><em className="ion-ios-telephone icon-fw mr"></em>Mobile phone</td>
-                                                <td><span className="is-editable text-inherit">{this.state.contact_mobile_phone}</span></td>
+                                                <td><span className="is-editable text-inherit">{this.state.user_infos.contact_mobile_phone}</span></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
 
-
-
-                                <div className="card-divider"></div>
-                                <div className="card-offset">
-                                    <div className="card-offset-item text-right">
-                                        <button id="edit-enable" type="button" className="btn-raised btn btn-warning btn-circle btn-lg"><em className="ion-edit"></em></button>
-                                        <button id="edit-disable" type="submit" className="btn-raised btn btn-success btn-circle btn-lg hidden"><em className="ion-checkmark-round"></em></button>
-                                    </div>
-                                </div>
-                                <h5 className="card-heading pb0">Requests</h5>
-                                <div className="card-body">
-                                    <ul className="list-group m0">
-                                            <li className="list-group-item"><small className="text-thin">Serge would like to add you to his group</small> <Button bsStyle="success" className="btn-flat ripple" bsSize="small" ><small  className="text-thin">accept</small></Button> <Button bsStyle="danger" bsSize="small" className="btn-flat mr ripple"><small className="text-thin">reject</small></Button> </li>
-                                            <li className="list-group-item"><small className="text-thin">Rafael would like to add you to his group</small> <Button bsStyle="success" className="btn-flat ripple" bsSize="small" ><small  className="text-thin">accept</small></Button> <Button bsStyle="danger" bsSize="small" className="btn-flat mr ripple"><small className="text-thin">reject</small></Button> </li>
-                                     </ul>
-                                </div>
                             </form>
                         </Col>
                         {/* Right column */}
